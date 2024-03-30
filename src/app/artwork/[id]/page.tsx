@@ -3,6 +3,7 @@
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import DOMPurify from 'isomorphic-dompurify';
 
 const BASE_IIIF_URL = 'https://www.artic.edu/iiif/2';
 
@@ -33,7 +34,8 @@ const ArtworkPage = () => {
     setLoading(true);
     fetchArtworkById(artworkId)
       .then((data) => {
-        setArtwork(data);
+        const sanitizedDescription = DOMPurify.sanitize(data.description || '');
+        setArtwork({ ...data, description: sanitizedDescription });
         setError(null);
       })
       .catch((error) => {
@@ -57,7 +59,7 @@ const ArtworkPage = () => {
             {artwork.title}
           </h1>
           
-          <div className="relative w-full h-0 pb-[75%]"> {/* Aspect ratio container */}
+          <div className="relative w-full h-0 pb-[75%]">
             <Image
               src={imageUrl}
               alt={artwork.title || 'Artwork image'}
@@ -79,8 +81,9 @@ const ArtworkPage = () => {
           
           {showDescription && (
             <div className="mt-4 bg-gray-100 rounded-lg shadow px-4 py-6">
-              <p className="text-gray-700">{artwork.description}</p>
-            </div>
+            {/* Render sanitized HTML content */}
+            <div className="text-gray-700" dangerouslySetInnerHTML={{ __html: artwork.description || "This Art piece has no description" }}></div>
+          </div>
           )}
         </div>
       );

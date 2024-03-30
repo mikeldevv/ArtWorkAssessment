@@ -48,7 +48,7 @@ type Artwork = {
   date_qualifier_id: null;
   artist_display: string;
   place_of_origin: string;
-  description: null;
+  description: string | null;
   short_description: null;
   dimensions: string;
   dimensions_detail: DimensionsDetail[];
